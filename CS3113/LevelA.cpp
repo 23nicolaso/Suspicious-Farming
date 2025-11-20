@@ -30,32 +30,36 @@ void LevelA::initialise()
    /*
       ----------- PROTAGONIST -----------
    */
-   std::map<Direction, std::vector<int>> xochitlAnimationAtlas = {
-      {DOWN,       {  1,  0,  1, 2  } },
-      {LEFT,       {  10, 9,  10, 11 } },
-      {UP,         {  4,  3,  4, 5  } },
-      {RIGHT,      {  7,  6,  7, 8  } },
-      {UP_HOLDING, {  12, 13, 14, 13 }},
-      {LEFT_HOLDING, {  18, 19, 20, 19 }},
-      {RIGHT_HOLDING, {  15, 16, 17, 16 }},
-      {DOWN_HOLDING, {  40, 39, 40, 41 }},
-      {DOWN_SLASH, {  21, 22, 23, 24 }},
-      {RIGHT_SLASH, {  25, 26, 27, 28, 29 }},
-      {UP_SLASH, {  35, 36, 37, 38 }},
-      {DOWN_GUN, {  42, 43, 44, 43 }},
-      {RIGHT_GUN, {  45, 46, 47, 46 }},
-      {UP_GUN, {  51, 52, 53, 52 }},
-      {LEFT_GUN,  {  42, 43, 44, 43 }},
-      {LEFT_SLASH, {  30, 31, 32, 33, 34 }},
+   std::map<AnimState, std::vector<int>> xochitlAnimationAtlas = {
+      {RIGHT_SLASH,  { 25, 26, 27, 28, 29 }},
+      {LEFT_SLASH,   { 30, 31, 32, 33, 34 }},
+      {DOWN,         { 1,  0,  1,  2  }},
+      {LEFT,         { 10, 9,  10, 11 }},
+      {UP,           { 4,  3,  4,  5  }},
+      {RIGHT,        { 7,  6,  7,  8  }},
+      {UP_HOLDING,   { 12, 13, 14, 13 }},
+      {LEFT_HOLDING, { 18, 19, 20, 19 }},
+      {RIGHT_HOLDING,{ 15, 16, 17, 16 }},
+      {DOWN_HOLDING, { 40, 39, 40, 41 }},
+      {DOWN_SLASH,   { 21, 22, 23, 24 }},
+      {UP_SLASH,     { 35, 36, 37, 38 }},
+      {DOWN_GUN,     { 42, 43, 44, 43 }},
+      {RIGHT_GUN,    { 45, 46, 47, 46 }},
+      {UP_GUN,       { 51, 52, 53, 52 }},
+      {LEFT_GUN,     { 48, 49, 50, 49 }},
+      {LEFT_SHOOT,   { 49, 55, 49 }},
+      {RIGHT_SHOOT,  { 46, 54, 46 }},
+      {UP_SHOOT,     { 52, 57, 52 }},
+      {DOWN_SHOOT,   { 43, 56, 43 }},
    };
 
-   // Assets from @see https://sscary.itch.io/the-adventurer-female
+   // Assets from me!
    mGameState.xochitl = new Entity(
       {mOrigin.x - 300.0f, mOrigin.y - 200.0f}, // position
       {100.0f, 100.0f},                         // scale
       "assets/game/walk.png",                   // texture file address
       ATLAS,                                    // single image or atlas?
-      { 7, 8 },                                 // atlas dimensions
+      { 8, 8 },                                 // atlas dimensions
       xochitlAnimationAtlas,                    // actual atlas
       PLAYER                                    // entity type
    );

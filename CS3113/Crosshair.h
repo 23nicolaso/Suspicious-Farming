@@ -1,7 +1,7 @@
 #ifndef CROSSHAIR_H
 #define CROSSHAIR_H
 
-#include "Map.h"
+#include "cs3113.h"
 
 enum CrosshairStatus {CROSSHAIR_VISIBLE, CROSSHAIR_HIDDEN};
 

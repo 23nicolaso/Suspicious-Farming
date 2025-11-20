@@ -2,11 +2,12 @@
 #define ENTITY_H
 
 #include "Map.h"
+#include "Item.h"
 
-enum Direction    { 
+enum AnimState    { 
     LEFT, UP, RIGHT, DOWN, UP_HOLDING, RIGHT_HOLDING, LEFT_HOLDING, 
     DOWN_SLASH, RIGHT_SLASH, UP_SLASH, DOWN_HOLDING, DOWN_GUN, LEFT_GUN,
-    LEFT_SLASH, RIGHT_GUN, UP_GUN                   
+    LEFT_SLASH, RIGHT_GUN, UP_GUN, LEFT_SHOOT, RIGHT_SHOOT, DOWN_SHOOT, UP_SHOOT              
 }; 
 
 enum EntityStatus { ACTIVE, INACTIVE                    };
@@ -28,9 +29,9 @@ private:
     TextureType mTextureType;
     Vector2 mSpriteSheetDimensions;
     
-    std::map<Direction, std::vector<int>> mAnimationAtlas;
+    std::map<AnimState, std::vector<int>> mAnimationAtlas;
     std::vector<int> mAnimationIndices;
-    Direction mDirection;
+    AnimState mAnimState;
     int mFrameSpeed;
 
     int mCurrentFrameIndex = 0;
@@ -43,6 +44,10 @@ private:
     bool mIsCollidingBottom = false;
     bool mIsCollidingRight  = false;
     bool mIsCollidingLeft   = false;
+
+    // For animations which should play through fully (only once) before allowing other animations / actions to play
+    bool mIsAnimationBlocking = false; 
+    AnimState mLastDirection;
 
     EntityStatus mEntityStatus = ACTIVE;
     EntityType   mEntityType;
@@ -82,7 +87,7 @@ public:
         EntityType entityType);
     Entity(Vector2 position, Vector2 scale, const char *textureFilepath, 
         TextureType textureType, Vector2 spriteSheetDimensions, 
-        std::map<Direction, std::vector<int>> animationAtlas, 
+        std::map<AnimState, std::vector<int>> animationAtlas, 
         EntityType entityType);
     ~Entity();
 
@@ -97,10 +102,32 @@ public:
 
     bool isActive() { return mEntityStatus == ACTIVE ? true : false; }
 
-    void moveUp()    { mMovement.y = -1; }
-    void moveDown()  { mMovement.y =  1; }
-    void moveLeft()  { mMovement.x = -1; }
-    void moveRight() { mMovement.x =  1; }
+    void updateAtlas() { mAnimationIndices = mAnimationAtlas.at(mAnimState); } 
+
+    void moveUp    (ItemType heldItem) { 
+        if (mIsAnimationBlocking) return;
+        mMovement.y = -1; 
+        if (heldItem == AIR || heldItem == HOE)     mAnimState = UP;
+        else if (heldItem == CONSUMABLE)            mAnimState = UP_HOLDING;
+    }
+    void moveDown  (ItemType heldItem) {
+        if (mIsAnimationBlocking) return; 
+        mMovement.y =  1; 
+        if (heldItem == AIR || heldItem == HOE)     mAnimState = DOWN;
+        else if (heldItem == CONSUMABLE)            mAnimState = DOWN_HOLDING;
+    }
+    void moveLeft  (ItemType heldItem) { 
+        if (mIsAnimationBlocking) return;
+        mMovement.x = -1; 
+        if (heldItem == AIR || heldItem == HOE)     mAnimState = LEFT;
+        else if (heldItem == CONSUMABLE)            mAnimState = LEFT_HOLDING;
+    }
+    void moveRight (ItemType heldItem) { 
+        if (mIsAnimationBlocking) return;
+        mMovement.x =  1; 
+        if (heldItem == AIR || heldItem == HOE)     mAnimState = RIGHT;
+        else if (heldItem == CONSUMABLE)            mAnimState = RIGHT_HOLDING;
+    }
 
     void resetMovement() { mMovement = { 0.0f, 0.0f }; }
 
@@ -112,7 +139,7 @@ public:
     Vector2     getSpriteSheetDimensions() const { return mSpriteSheetDimensions; }
     Texture2D   getTexture()               const { return mTexture;               }
     TextureType getTextureType()           const { return mTextureType;           }
-    Direction   getDirection()             const { return mDirection;             }
+    AnimState   getAnimState()             const { return mAnimState;             }
     int         getFrameSpeed()            const { return mFrameSpeed;            }
     int         getSpeed()                 const { return mSpeed;                 }
     float       getAngle()                 const { return mAngle;                 }
@@ -124,7 +151,10 @@ public:
     bool isCollidingTop()    const { return mIsCollidingTop;    }
     bool isCollidingBottom() const { return mIsCollidingBottom; }
 
-    std::map<Direction, std::vector<int>> getAnimationAtlas() const { return mAnimationAtlas; }
+    std::map<AnimState, std::vector<int>> getAnimationAtlas() const { return mAnimationAtlas; }
+
+    void lookAtMouse(ItemType activeItemType, Vector2 mousePosition);
+    void useItem(ItemType activeItemType, Vector2 mousePosition);
 
     void setPosition(Vector2 newPosition)
         { mPosition = newPosition;                 }
@@ -146,25 +176,11 @@ public:
         { mAngle = newAngle;                       }
     void setEntityType(EntityType entityType)
         { mEntityType = entityType;                }
-    void setDirection(Direction newDirection)
+    void setAnimState(AnimState newAnimState)
     { 
-        mDirection = newDirection;
-
-        if (mTextureType == ATLAS) mAnimationIndices = mAnimationAtlas.at(mDirection);
+        mAnimState = newAnimState;
+        if (mTextureType == ATLAS) mAnimationIndices = mAnimationAtlas.at(mAnimState);
     }
-    void lookAtMouse(Vector2 mousePosition){
-        printf("%f, %f, \n", mousePosition.x, mousePosition.y);
-        if (abs(mousePosition.x) > 
-            abs(mousePosition.y))
-        {
-            if (mousePosition.x > 0) mDirection = RIGHT_GUN;
-            else                     mDirection = LEFT_GUN;
-        } else {
-            if (mousePosition.y > 0) mDirection = DOWN_GUN;
-            else                     mDirection = UP_GUN;
-        }
-    }
-
     void setAIState(AIState newState)
         { mAIState = newState;                     }
     void setAIType(AIType newType)

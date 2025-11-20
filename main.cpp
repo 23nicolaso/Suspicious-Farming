@@ -5,10 +5,13 @@ constexpr int SCREEN_WIDTH     = 1920,
               SCREEN_HEIGHT    = 1080,
               FPS              = 120,
               NUMBER_OF_LEVELS = 2;
-
-constexpr Vector2 ORIGIN = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
             
-constexpr float FIXED_TIMESTEP = 1.0f / 60.0f;
+constexpr float FIXED_TIMESTEP              = 1.0f / 60.0f,
+                INVENTORY_SLOT_SIZE         = 100.0f,
+                INVENTORY_BAR_BOTTOM_OFFSET = 100.0f;
+
+constexpr Vector2 ORIGIN = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 },
+                  ITEM_SCALE = { INVENTORY_SLOT_SIZE * 0.8f, INVENTORY_SLOT_SIZE * 0.8f };
 
 // Global Variables
 AppStatus gAppStatus   = RUNNING;
@@ -20,6 +23,11 @@ std::vector<Scene*> gLevels = {};
 
 LevelA *gLevelA = nullptr;
 LevelB *gLevelB = nullptr;
+Inventory *gInventory = nullptr;
+
+Item *item1 = nullptr;
+Item *item2 = nullptr;
+Item *item3 = nullptr;
 
 Effects *gEffects = nullptr;
 
@@ -49,6 +57,36 @@ void initialise()
 
     gLevelA = new LevelA(ORIGIN, "#011627");
     gLevelB = new LevelB(ORIGIN, "#011627");
+    gInventory = new Inventory(
+      {ORIGIN.x - 4.5 * INVENTORY_SLOT_SIZE, ORIGIN.y + SCREEN_HEIGHT / 2 - INVENTORY_BAR_BOTTOM_OFFSET},             // Position
+      {INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE},    // Scale
+      "assets/game/inventoryslots.png"
+    );
+
+    item1 = new Item(
+        GUN,                                        // Item Type
+        ITEM_SCALE,                                 // Scale
+        1,                                          // Quantity
+        "assets/game/gun.png"                       // Texture Filepath
+    );
+
+    item2 = new Item(
+        HOE,                                        // Item Type
+        ITEM_SCALE,                                 // Scale
+        1,                                          // Quantity
+        "assets/game/hoe.png"                       // Texture Filepath
+    );
+
+    item3 = new Item(
+        CONSUMABLE,                                 // Item Type
+        ITEM_SCALE,                                 // Scale
+        5,                                          // Quantity
+        "assets/game/peanut_seed.png"               // Texture Filepath
+    );
+
+    gInventory->addItem(item1);
+    gInventory->addItem(item2);
+    gInventory->addItem(item3);
 
     gLevels.push_back(gLevelA);
     gLevels.push_back(gLevelB);
@@ -77,12 +115,27 @@ void processInput()
     
 
     gCurrentScene->getState().crosshair -> setPosition(mouseWorld);
-    gCurrentScene->getState().xochitl -> lookAtMouse(mousePosition);
 
-    if      (IsKeyDown(KEY_A)) gCurrentScene->getState().xochitl->moveLeft();
-    else if (IsKeyDown(KEY_D)) gCurrentScene->getState().xochitl->moveRight();
-    if      (IsKeyDown(KEY_W)) gCurrentScene->getState().xochitl->moveUp();
-    else if (IsKeyDown(KEY_S)) gCurrentScene->getState().xochitl->moveDown();
+    gCurrentScene->getState().xochitl -> lookAtMouse(gInventory -> getItemType(), mousePosition);
+
+    if      (IsKeyDown(KEY_A)) gCurrentScene->getState().xochitl->moveLeft  (gInventory -> getItemType());
+    else if (IsKeyDown(KEY_D)) gCurrentScene->getState().xochitl->moveRight (gInventory -> getItemType());
+    if      (IsKeyDown(KEY_W)) gCurrentScene->getState().xochitl->moveUp    (gInventory -> getItemType());
+    else if (IsKeyDown(KEY_S)) gCurrentScene->getState().xochitl->moveDown  (gInventory -> getItemType());
+    
+    if      (IsMouseButtonPressed(0)) gCurrentScene->getState().xochitl-> useItem (gInventory -> getItemType(), mousePosition);
+
+    if (IsKeyDown(KEY_ONE))        gInventory -> SetCurrentSlot(0);
+    else if (IsKeyDown(KEY_TWO))   gInventory -> SetCurrentSlot(1);
+    else if (IsKeyDown(KEY_THREE)) gInventory -> SetCurrentSlot(2);
+    else if (IsKeyDown(KEY_FOUR))  gInventory -> SetCurrentSlot(3);
+    else if (IsKeyDown(KEY_FIVE))  gInventory -> SetCurrentSlot(4);
+    else if (IsKeyDown(KEY_SIX))   gInventory -> SetCurrentSlot(5);
+    else if (IsKeyDown(KEY_SEVEN)) gInventory -> SetCurrentSlot(6);
+    else if (IsKeyDown(KEY_EIGHT)) gInventory -> SetCurrentSlot(7);
+    else if (IsKeyDown(KEY_NINE))  gInventory -> SetCurrentSlot(8);
+
+    gInventory -> UpdateSlotWithScroll(GetMouseWheelMove());
 
     if (GetLength(gCurrentScene->getState().xochitl->getMovement()) > 1.0f) 
         gCurrentScene->getState().xochitl->normaliseMovement();
@@ -121,14 +174,16 @@ void render()
 {
     BeginDrawing();
     BeginMode2D(gCurrentScene->getState().camera);
-    gShader.begin();
+    // gShader.begin();
 
-    gShader.setVector2("lightPosition", gLightPosition);
+    // gShader.setVector2("lightPosition", gLightPosition);
     gCurrentScene->render();
 
-    gShader.end();
+    // gShader.end();
     gEffects->render();
     EndMode2D();
+
+    gInventory->render();
     EndDrawing();
 }
 
@@ -136,6 +191,10 @@ void shutdown()
 {
     delete gLevelA;
     delete gLevelB;
+    delete gInventory;
+    delete item1;
+    delete item2;
+    delete item3;
 
     for (int i = 0; i < NUMBER_OF_LEVELS; i++) gLevels[i] = nullptr;
 

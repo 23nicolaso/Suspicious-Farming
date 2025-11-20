@@ -5,29 +5,90 @@ Entity::Entity() : mPosition {0.0f, 0.0f}, mMovement {0.0f, 0.0f},
                    mScale {DEFAULT_SIZE, DEFAULT_SIZE},
                    mColliderDimensions {DEFAULT_SIZE, DEFAULT_SIZE}, 
                    mTexture {NULL}, mTextureType {SINGLE}, mAngle {0.0f},
-                   mSpriteSheetDimensions {}, mDirection {RIGHT}, 
+                   mSpriteSheetDimensions {}, mAnimState {RIGHT}, 
                    mAnimationAtlas {{}}, mAnimationIndices {}, mFrameSpeed {0},
                    mEntityType {EMPTY} { }
 
 Entity::Entity(Vector2 position, Vector2 scale, const char *textureFilepath, 
     EntityType entityType) : mPosition {position}, mVelocity {0.0f, 0.0f}, mScale {scale}, mMovement {0.0f, 0.0f}, 
     mColliderDimensions {scale}, mTexture {LoadTexture(textureFilepath)}, 
-    mTextureType {SINGLE}, mDirection {RIGHT}, mAnimationAtlas {{}}, 
+    mTextureType {SINGLE}, mAnimState {RIGHT}, mAnimationAtlas {{}}, 
     mAnimationIndices {}, mFrameSpeed {0}, mSpeed {DEFAULT_SPEED}, 
     mAngle {0.0f}, mEntityType {entityType} { }
 
 Entity::Entity(Vector2 position, Vector2 scale, const char *textureFilepath, 
-        TextureType textureType, Vector2 spriteSheetDimensions, std::map<Direction, 
+        TextureType textureType, Vector2 spriteSheetDimensions, std::map<AnimState, 
         std::vector<int>> animationAtlas, EntityType entityType) : 
         mPosition {position}, mVelocity {0.0f, 0.0f}, mMovement { 0.0f, 0.0f }, mScale {scale},
         mColliderDimensions {scale}, mTexture {LoadTexture(textureFilepath)}, 
         mTextureType {ATLAS}, mSpriteSheetDimensions {spriteSheetDimensions},
-        mAnimationAtlas {animationAtlas}, mDirection {RIGHT},
+        mAnimationAtlas {animationAtlas}, mAnimState {RIGHT},
         mAnimationIndices {animationAtlas.at(RIGHT)}, 
         mFrameSpeed {DEFAULT_FRAME_SPEED}, mAngle { 0.0f }, 
         mSpeed { DEFAULT_SPEED }, mEntityType {entityType} { }
 
 Entity::~Entity() { UnloadTexture(mTexture); };
+
+
+void Entity::useItem(ItemType activeItemType, Vector2 mousePosition){
+    if (activeItemType == HOE){
+        if (mIsAnimationBlocking){
+            // Can't double block!
+            return;
+        }
+
+        mCurrentFrameIndex = 0;
+        mIsAnimationBlocking = true;
+        if (abs(mousePosition.x) > 
+            abs(mousePosition.y))
+        {
+            if (mousePosition.x > 0) mAnimState = RIGHT_SLASH;
+            else                     mAnimState = LEFT_SLASH;
+        } else {
+            if (mousePosition.y > 0) mAnimState = DOWN_SLASH;
+            else                     mAnimState = UP_SLASH;
+        }
+    }
+
+    else if (activeItemType == GUN){
+        if (mIsAnimationBlocking){
+            // Can't double block!
+            return;
+        }
+
+        mCurrentFrameIndex = 0;
+        mIsAnimationBlocking = true;
+        if (abs(mousePosition.x) > 
+            abs(mousePosition.y))
+        {
+            if (mousePosition.x > 0) mAnimState = RIGHT_SHOOT;
+            else                     mAnimState = LEFT_SHOOT;
+        } else {
+            if (mousePosition.y > 0) mAnimState = DOWN_SHOOT;
+            else                     mAnimState = UP_SHOOT;
+        }
+    }
+}
+
+void Entity::lookAtMouse(ItemType activeItemType, Vector2 mousePosition)
+{
+    if (mIsAnimationBlocking) return;
+
+    if (activeItemType == GUN){
+        if (abs(mousePosition.x) > 
+            abs(mousePosition.y))
+        {
+            if (mousePosition.x > 0) mAnimState = RIGHT_GUN;
+            else                     mAnimState = LEFT_GUN;
+        } else {
+            if (mousePosition.y > 0) mAnimState = DOWN_GUN;
+            else                     mAnimState = UP_GUN;
+        }
+    }
+    else {
+        return;
+    }
+}
 
 void Entity::checkCollisionY(Entity *collidableEntities, int collisionCheckCount)
 {
@@ -184,21 +245,25 @@ bool Entity::isColliding(Entity *other) const
 
 void Entity::animate(float deltaTime)
 {
-    mAnimationIndices = mAnimationAtlas.at(mDirection);
+    mAnimationIndices = mAnimationAtlas.at(mAnimState);
 
     mAnimationTime += deltaTime;
     float framesPerSecond = 1.0f / mFrameSpeed;
 
     if (mAnimationTime >= framesPerSecond)
-    {
+    {   
         mAnimationTime = 0.0f;
 
         mCurrentFrameIndex++;
+        if (mIsAnimationBlocking && mCurrentFrameIndex >= mAnimationIndices.size()){
+            mCurrentFrameIndex = 0;
+            mIsAnimationBlocking = false;
+        }
         mCurrentFrameIndex %= mAnimationIndices.size();
     }
 }
 
-void Entity::AIWander() { moveLeft(); }
+void Entity::AIWander() {}
 
 void Entity::AIFollow(Entity *target)
 {
@@ -211,9 +276,9 @@ void Entity::AIFollow(Entity *target)
 
     case WALKING:
         // Depending on where the player is in respect to their x-position
-        // Change direction of the enemy
-        if (mPosition.x > target->getPosition().x) moveLeft();
-        else                                       moveRight();
+        // Change AnimState of the enemy
+        // if (mPosition.x > target->getPosition().x) moveLeft();
+        // else                                       moveRight();
     
     default:
         break;
@@ -257,7 +322,7 @@ void Entity::update(float deltaTime, Entity *player, Map *map,
     checkCollisionX(collidableEntities, collisionCheckCount);
     checkCollisionX(map);
 
-    if (mTextureType == ATLAS && GetLength(mMovement) != 0) 
+    if (mTextureType == ATLAS && (mIsAnimationBlocking || (!mIsAnimationBlocking && GetLength(mMovement) != 0))) 
         animate(deltaTime);
 }
 
@@ -265,6 +330,7 @@ void Entity::render()
 {
     if(mEntityStatus == INACTIVE) return;
 
+    updateAtlas();
     Rectangle textureArea;
 
     switch (mTextureType)

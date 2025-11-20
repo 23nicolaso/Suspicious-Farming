@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "Crosshair.h"
+#include "Inventory.h"
 
 #ifndef SCENE_H
 #define SCENE_H
