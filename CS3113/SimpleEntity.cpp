@@ -1,14 +1,12 @@
-#include "Crosshair.h"
+#include "SimpleEntity.h"
 
+SimpleEntity::SimpleEntity(Vector2 position, Vector2 direction, Vector2 scale, const char *textureFilepath) : mPosition {position}, mDirection {direction}, mScale {scale}, mTexture {LoadTexture(textureFilepath)} {}
 
-Crosshair::Crosshair(Vector2 position, Vector2 scale, const char *textureFilepath) : mPosition {position}, mScale {scale}, mTexture {LoadTexture(textureFilepath)} {}
+SimpleEntity::~SimpleEntity() { UnloadTexture(mTexture); };
 
-Crosshair::~Crosshair() { UnloadTexture(mTexture); };
-
-
-void Crosshair::render()
+void SimpleEntity::render()
 {
-    if(mCrosshairStatus == CROSSHAIR_HIDDEN) return;
+    if(mVisibilityStatus == HIDDEN) return;
 
     Rectangle textureArea;
     // Whole texture (UV coordinates)
@@ -39,6 +37,6 @@ void Crosshair::render()
     DrawTexturePro(
         mTexture, 
         textureArea, destinationArea, originOffset,
-        0, WHITE
+        mRotation, WHITE
     );
 }

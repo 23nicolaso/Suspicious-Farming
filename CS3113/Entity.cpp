@@ -30,7 +30,7 @@ Entity::Entity(Vector2 position, Vector2 scale, const char *textureFilepath,
 Entity::~Entity() { UnloadTexture(mTexture); };
 
 
-void Entity::useItem(ItemType activeItemType, Vector2 mousePosition){
+void Entity::useItem(BulletManager* bulletManager, ItemType activeItemType, Vector2 mousePosition){
     if (activeItemType == HOE){
         if (mIsAnimationBlocking){
             // Can't double block!
@@ -61,11 +61,23 @@ void Entity::useItem(ItemType activeItemType, Vector2 mousePosition){
         if (abs(mousePosition.x) > 
             abs(mousePosition.y))
         {
-            if (mousePosition.x > 0) mAnimState = RIGHT_SHOOT;
-            else                     mAnimState = LEFT_SHOOT;
+            if (mousePosition.x > 0) {
+                mAnimState = RIGHT_SHOOT;
+                bulletManager->shoot({1.0f, 0.0f}, {mPosition.x + BULLET_SPAWN_OFFSET, mPosition.y});
+            }
+            else {
+                mAnimState = LEFT_SHOOT;
+                bulletManager->shoot({-1.0f, 0.0f}, {mPosition.x - BULLET_SPAWN_OFFSET, mPosition.y});
+            }
         } else {
-            if (mousePosition.y > 0) mAnimState = DOWN_SHOOT;
-            else                     mAnimState = UP_SHOOT;
+            if (mousePosition.y > 0) {
+                mAnimState = DOWN_SHOOT;
+                bulletManager->shoot({0.0f, 1.0f}, {mPosition.x, mPosition.y + BULLET_SPAWN_OFFSET});
+            }
+            else {
+                mAnimState = UP_SHOOT;
+                bulletManager->shoot({0.0f, -1.0f}, {mPosition.x, mPosition.y - BULLET_SPAWN_OFFSET});
+            }
         }
     }
 }

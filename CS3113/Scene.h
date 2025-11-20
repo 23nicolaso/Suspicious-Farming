@@ -1,3 +1,4 @@
+#include "BulletManager.h"
 #include "Entity.h"
 #include "Crosshair.h"
 #include "Inventory.h"
@@ -11,6 +12,8 @@ struct GameState
     
     Crosshair *crosshair;
     Map *map;
+
+    BulletManager *bulletManager;
 
     Music bgm;
     Sound jumpSound;

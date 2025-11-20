@@ -3,6 +3,7 @@
 
 #include "Map.h"
 #include "Item.h"
+#include "BulletManager.h"
 
 enum AnimState    { 
     LEFT, UP, RIGHT, DOWN, UP_HOLDING, RIGHT_HOLDING, LEFT_HOLDING, 
@@ -77,10 +78,11 @@ private:
     void AIFollow(Entity *target);
 
 public:
-    static constexpr int   DEFAULT_SIZE          = 250;
-    static constexpr int   DEFAULT_SPEED         = 200;
-    static constexpr int   DEFAULT_FRAME_SPEED   = 3;
-    static constexpr float Y_COLLISION_THRESHOLD = 0.5f;
+    static constexpr int    DEFAULT_SIZE          = 250,
+                            DEFAULT_SPEED         = 200,
+                            DEFAULT_FRAME_SPEED   = 3;
+    static constexpr float  Y_COLLISION_THRESHOLD = 0.5f,
+                            BULLET_SPAWN_OFFSET   = 50.0f;
 
     Entity();
     Entity(Vector2 position, Vector2 scale, const char *textureFilepath, 
@@ -154,7 +156,7 @@ public:
     std::map<AnimState, std::vector<int>> getAnimationAtlas() const { return mAnimationAtlas; }
 
     void lookAtMouse(ItemType activeItemType, Vector2 mousePosition);
-    void useItem(ItemType activeItemType, Vector2 mousePosition);
+    void useItem(BulletManager* bulletManager, ItemType activeItemType, Vector2 mousePosition);
 
     void setPosition(Vector2 newPosition)
         { mPosition = newPosition;                 }

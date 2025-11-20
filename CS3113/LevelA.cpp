@@ -68,16 +68,24 @@ void LevelA::initialise()
       mGameState.xochitl->getScale().x,
       mGameState.xochitl->getScale().y
    });
-   mGameState.xochitl->setFrameSpeed(3);
+   mGameState.xochitl->setFrameSpeed(5);
 
    /*
       ----------- CROSSHAIR ----------
    */
   mGameState.crosshair = new Crosshair(
    {mOrigin.x, mOrigin.y},
+   {0, 0},
    {50.0f, 50.0f},
    "assets/game/crosshair.png"
   );
+
+  mGameState.crosshair->activate();
+
+  /*
+      ----------- BULLET MANAGER ----------
+  */
+ mGameState.bulletManager = new BulletManager();
 
    /*
       ----------- CAMERA -----------
@@ -103,6 +111,8 @@ void LevelA::update(float deltaTime)
 
    Vector2 currentPlayerPosition = { mGameState.xochitl->getPosition().x, mGameState.xochitl->getPosition().y };
 
+   mGameState.bulletManager -> update(deltaTime);
+
    panCamera(&mGameState.camera, &currentPlayerPosition);
 }
 
@@ -113,6 +123,7 @@ void LevelA::render()
    mGameState.map->render();
    mGameState.xochitl->render();
    mGameState.crosshair->render();
+   mGameState.bulletManager->render();
 }
 
 void LevelA::shutdown()
