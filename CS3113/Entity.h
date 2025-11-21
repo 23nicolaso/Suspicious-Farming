@@ -156,7 +156,7 @@ public:
     std::map<AnimState, std::vector<int>> getAnimationAtlas() const { return mAnimationAtlas; }
 
     void lookAtMouse(ItemType activeItemType, Vector2 mousePosition);
-    void useItem(BulletManager* bulletManager, ItemType activeItemType, Vector2 mousePosition);
+    void useItem(BulletManager* bulletManager, Map* map, ItemType activeItemType, Vector2 mousePosition);
 
     void setPosition(Vector2 newPosition)
         { mPosition = newPosition;                 }

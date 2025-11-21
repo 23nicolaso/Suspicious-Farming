@@ -34,6 +34,8 @@ public:
     void build();
     void render();
     bool isSolidTileAt(Vector2 position, float *xOverlap, float *yOverlap);
+    int  getTileAt(Vector2 position) const;
+    void setTileAt(Vector2 position, int newTile);
 
     int           getMapColumns()     const { return mMapColumns;     };
     int           getMapRows()        const { return mMapRows;        };

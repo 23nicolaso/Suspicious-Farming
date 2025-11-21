@@ -30,13 +30,14 @@ Entity::Entity(Vector2 position, Vector2 scale, const char *textureFilepath,
 Entity::~Entity() { UnloadTexture(mTexture); };
 
 
-void Entity::useItem(BulletManager* bulletManager, ItemType activeItemType, Vector2 mousePosition){
+void Entity::useItem(BulletManager* bulletManager, Map* map, ItemType activeItemType, Vector2 mousePosition){
     if (activeItemType == HOE){
         if (mIsAnimationBlocking){
             // Can't double block!
             return;
         }
 
+        // HANDLE ANIMATION
         mCurrentFrameIndex = 0;
         mIsAnimationBlocking = true;
         if (abs(mousePosition.x) > 
@@ -48,6 +49,16 @@ void Entity::useItem(BulletManager* bulletManager, ItemType activeItemType, Vect
             if (mousePosition.y > 0) mAnimState = DOWN_SLASH;
             else                     mAnimState = UP_SLASH;
         }
+
+        // CORRECT MOUSE POSITION FOR WORLD
+        mousePosition.x += mPosition.x;
+        mousePosition.y += mPosition.y;
+
+        // HANDLE MAP ADJUSTMENT
+        if (map->getTileAt(mousePosition) == 3){
+            map->setTileAt(mousePosition, 4);
+        }
+
     }
 
     else if (activeItemType == GUN){

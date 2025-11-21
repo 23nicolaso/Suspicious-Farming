@@ -126,7 +126,16 @@ void processInput()
     if      (IsKeyDown(KEY_W)) gCurrentScene->getState().xochitl->moveUp    (gInventory -> getItemType());
     else if (IsKeyDown(KEY_S)) gCurrentScene->getState().xochitl->moveDown  (gInventory -> getItemType());
     
-    if      (IsMouseButtonPressed(0)) gCurrentScene->getState().xochitl-> useItem (gCurrentScene->getState().bulletManager, gInventory -> getItemType(), mousePosition);
+    // LEFT CLICK TO USE ITEM
+    if (IsMouseButtonPressed(0)) {
+        gCurrentScene -> getState().xochitl -> 
+            useItem(
+                gCurrentScene -> getState().bulletManager, 
+                gCurrentScene -> getState().map, 
+                gInventory -> getItemType(), 
+                mousePosition
+            );
+    }
 
     if (IsKeyDown(KEY_ONE))        gInventory -> SetCurrentSlot(0);
     else if (IsKeyDown(KEY_TWO))   gInventory -> SetCurrentSlot(1);

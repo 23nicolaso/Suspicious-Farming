@@ -100,3 +100,27 @@ bool Map::isSolidTileAt(Vector2 position, float *xOverlap, float *yOverlap)
 
     return true;
 }
+
+int Map::getTileAt(Vector2 position) const
+{
+    int tileXIndex = floor((position.x - mLeftBoundary) / mTileSize);
+    int tileYIndex = floor((position.y - mTopBoundary) / mTileSize);
+
+    if (tileXIndex < 0 || tileXIndex >= mMapColumns ||
+        tileYIndex < 0 || tileYIndex >= mMapRows)
+        return 0;
+
+    int tile = mLevelData[tileYIndex * mMapColumns + tileXIndex];
+    return tile;
+}
+
+void Map::setTileAt(Vector2 position, int newTile) {
+    int tileXIndex = floor((position.x - mLeftBoundary) / mTileSize);
+    int tileYIndex = floor((position.y - mTopBoundary) / mTileSize);
+    
+    if (tileXIndex < 0 || tileXIndex >= mMapColumns ||
+        tileYIndex < 0 || tileYIndex >= mMapRows)
+        return;
+
+    mLevelData[tileYIndex * mMapColumns + tileXIndex] = newTile;
+}
