@@ -22,7 +22,6 @@ Scene *gCurrentScene = nullptr;
 std::vector<Scene*> gLevels = {};
 
 LevelA *gLevelA = nullptr;
-LevelB *gLevelB = nullptr;
 Inventory *gInventory = nullptr;
 
 Item *item1 = nullptr;
@@ -56,7 +55,6 @@ void initialise()
     gShader.load("shaders/vertex.glsl", "shaders/fragment.glsl");
 
     gLevelA = new LevelA(ORIGIN, "#011627");
-    gLevelB = new LevelB(ORIGIN, "#011627");
     gInventory = new Inventory(
       {ORIGIN.x - 4.5 * INVENTORY_SLOT_SIZE, ORIGIN.y + SCREEN_HEIGHT / 2 - INVENTORY_BAR_BOTTOM_OFFSET},             // Position
       {INVENTORY_SLOT_SIZE, INVENTORY_SLOT_SIZE},    // Scale
@@ -89,7 +87,6 @@ void initialise()
     gInventory->addItem(item3);
 
     gLevels.push_back(gLevelA);
-    gLevels.push_back(gLevelB);
 
     switchToScene(gLevels[0]);
 
@@ -130,7 +127,8 @@ void processInput()
     if (IsMouseButtonPressed(0)) {
         gCurrentScene -> getState().xochitl -> 
             useItem(
-                gCurrentScene -> getState().bulletManager, 
+                gCurrentScene -> getState().monsterManager,
+                gCurrentScene -> getState().bulletManager,
                 gCurrentScene -> getState().map, 
                 gInventory -> getItemType(), 
                 mousePosition
@@ -202,7 +200,6 @@ void render()
 void shutdown() 
 {
     delete gLevelA;
-    delete gLevelB;
     delete gInventory;
     delete item1;
     delete item2;

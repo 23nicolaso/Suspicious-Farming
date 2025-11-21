@@ -5,7 +5,7 @@
 
 enum VisibilityStatus {VISIBLE, HIDDEN};
 
-class SimpleEntity
+class MinimalEntity
 {
 protected:
     float   mRotation = 0.0f;
@@ -18,8 +18,8 @@ protected:
 public:
     const Vector2 ZERO_VECTOR = {0.0f, 0.0f};
 
-    SimpleEntity(Vector2 position, Vector2 direction, Vector2 scale, const char *textureFilepath);
-    ~SimpleEntity();
+    MinimalEntity(Vector2 position, Vector2 direction, Vector2 scale, const char *textureFilepath);
+    ~MinimalEntity();
 
     void render();
     void activate()   { mVisibilityStatus = VISIBLE; }

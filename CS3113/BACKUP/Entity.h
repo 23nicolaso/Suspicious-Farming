@@ -95,7 +95,7 @@ public:
 
     void update(float deltaTime, Entity *player, Map *map, 
         Entity *collidableEntities, int collisionCheckCount);
-    void render();
+    void render() const;
     void normaliseMovement() { Normalise(&mMovement); }
 
     void activate()   { mEntityStatus  = ACTIVE;   }

@@ -28,23 +28,16 @@ void LevelB::initialise()
    /*
       ----------- PROTAGONIST -----------
    */
-   std::map<AnimState, std::vector<int>> xochitlAnimationAtlas = {
-      {DOWN,  {  0,  1,  2,  3,  4,  5,  6,  7 }},
-      {LEFT,  {  8,  9, 10, 11, 12, 13, 14, 15 }},
-      {UP,    { 24, 25, 26, 27, 28, 29, 30, 31 }},
-      {RIGHT, { 40, 41, 42, 43, 44, 45, 46, 47 }},
-   };
-
+   
    float sizeRatio  = 48.0f / 64.0f;
 
    // Assets from @see https://sscary.itch.io/the-adventurer-female
-   mGameState.xochitl = new Entity(
+   mGameState.xochitl = new Player(
       {mOrigin.x - 300.0f, mOrigin.y - 200.0f}, // position
-      {250.0f * sizeRatio, 250.0f},             // scale
+      {100.0f, 100.0f},                         // scale
       "assets/game/walk.png",                   // texture file address
       ATLAS,                                    // single image or atlas?
-      { 6, 8 },                                 // atlas dimensions
-      xochitlAnimationAtlas,                    // actual atlas
+      { 8, 8 },                                 // atlas dimensions
       PLAYER                                    // entity type
    );
 

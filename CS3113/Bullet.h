@@ -1,9 +1,9 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "SimpleEntity.h"
+#include "MinimalEntity.h"
 
-class Bullet : public SimpleEntity{
+class Bullet : public MinimalEntity{
 private:
     float mAge = 0;
 public:
@@ -11,7 +11,7 @@ public:
                            BULLET_SPEED = 500.0f;
     
     Bullet();
-    using SimpleEntity::SimpleEntity;
+    using MinimalEntity::MinimalEntity;
     void update(float deltaTime) override;
 
     void setAge(float age) { mAge = age; }

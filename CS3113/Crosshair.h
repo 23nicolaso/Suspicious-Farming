@@ -1,12 +1,12 @@
 #ifndef CROSSHAIR_H
 #define CROSSHAIR_H
 
-#include "SimpleEntity.h"
+#include "MinimalEntity.h"
 
-class Crosshair : public SimpleEntity
+class Crosshair : public MinimalEntity
 {
 public:
-    using SimpleEntity::SimpleEntity;
+    using MinimalEntity::MinimalEntity;
     void update(float deltaTime) override{
         // Do nothing :D
     }    

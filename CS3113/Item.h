@@ -14,7 +14,7 @@ private:
     int         mQuantity; 
 
 public:
-    static constexpr int   DEFAULT_SIZE          = 100;
+    static constexpr int DEFAULT_SIZE = 100;
 
     Item(ItemType itemType, Vector2 scale, int quantity, const char *textureFilepath);
     Item();

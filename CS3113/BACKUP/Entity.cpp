@@ -55,7 +55,7 @@ void Entity::useItem(BulletManager* bulletManager, Map* map, ItemType activeItem
         mousePosition.y += mPosition.y;
 
         // HANDLE MAP ADJUSTMENT
-        if (map->getTileAt(mousePosition) == 3){
+        if (map->getTileAt(mousePosition) == 3 && Vector2Distance(mousePosition, mPosition) < 150.0f) {
             map->setTileAt(mousePosition, 4);
         }
 
@@ -349,11 +349,10 @@ void Entity::update(float deltaTime, Entity *player, Map *map,
         animate(deltaTime);
 }
 
-void Entity::render()
+void Entity::render() const
 {
     if(mEntityStatus == INACTIVE) return;
 
-    updateAtlas();
     Rectangle textureArea;
 
     switch (mTextureType)

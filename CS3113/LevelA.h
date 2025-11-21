@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Player.h"
 
 constexpr int LEVEL_WIDTH = 14,
               LEVEL_HEIGHT = 8;

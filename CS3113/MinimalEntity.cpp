@@ -1,10 +1,10 @@
-#include "SimpleEntity.h"
+#include "MinimalEntity.h"
 
-SimpleEntity::SimpleEntity(Vector2 position, Vector2 direction, Vector2 scale, const char *textureFilepath) : mPosition {position}, mDirection {direction}, mScale {scale}, mTexture {LoadTexture(textureFilepath)} {}
+MinimalEntity::MinimalEntity(Vector2 position, Vector2 direction, Vector2 scale, const char *textureFilepath) : mPosition {position}, mDirection {direction}, mScale {scale}, mTexture {LoadTexture(textureFilepath)} {}
 
-SimpleEntity::~SimpleEntity() { UnloadTexture(mTexture); };
+MinimalEntity::~MinimalEntity() { UnloadTexture(mTexture); };
 
-void SimpleEntity::render()
+void MinimalEntity::render()
 {
     if(mVisibilityStatus == HIDDEN) return;
 

@@ -1,5 +1,6 @@
 #include "BulletManager.h"
-#include "Entity.h"
+#include "MonsterManager.h"
+#include "Player.h"
 #include "Crosshair.h"
 #include "Inventory.h"
 
@@ -8,12 +9,13 @@
 
 struct GameState
 {
-    Entity *xochitl;
+    Player *xochitl = nullptr;
     
-    Crosshair *crosshair;
-    Map *map;
+    Crosshair *crosshair = nullptr;
+    Map *map = nullptr;
 
-    BulletManager *bulletManager;
+    MonsterManager *monsterManager = nullptr;
+    BulletManager *bulletManager = nullptr;
 
     Music bgm;
     Sound jumpSound;
@@ -44,4 +46,4 @@ public:
     const char* getBGColourHexCode() const { return mBGColourHexCode; }
 };
 
-#endif
+#endif // SCENE_H
