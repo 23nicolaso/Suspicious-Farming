@@ -9,6 +9,5 @@ void Bullet::update(float deltaTime){
     if (mVisibilityStatus == VISIBLE) {
         mPosition += mDirection * (deltaTime * BULLET_SPEED);
         mAge      += deltaTime;
-        printf("%f, %f, %f\n", mPosition.x, mPosition.y, mAge);
     }
 }

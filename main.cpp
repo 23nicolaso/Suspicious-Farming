@@ -113,8 +113,11 @@ void processInput()
         mousePosition.y + playerPosition.y
     };
     
-
-    gCurrentScene->getState().crosshair -> setPosition(mouseWorld);
+    // 6. Apply the new mouse position
+    if (gInventory -> getItemType() == GUN || gInventory -> getItemType() == AIR)
+        { gCurrentScene->getState().crosshair -> setPosition(mouseWorld); }
+    else 
+        { gCurrentScene->getState().crosshair -> snapPositionToGrid(gCurrentScene->getState().map, mouseWorld); }
 
     gCurrentScene->getState().xochitl -> lookAtMouse(gInventory -> getItemType(), mousePosition);
 

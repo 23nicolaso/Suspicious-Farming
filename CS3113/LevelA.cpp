@@ -19,12 +19,12 @@ void LevelA::initialise()
       ----------- MAP -----------
    */
    mGameState.map = new Map(
-      LEVEL_WIDTH, LEVEL_HEIGHT,   // map grid cols & rows
-      (unsigned int *) mLevelData, // grid data
-      "assets/game/tileset.png",   // texture filepath
-      TILE_DIMENSION,              // tile size
-      4, 1,                        // texture cols & rows
-      mOrigin                      // in-game origin
+      LEVEL_WIDTH, LEVEL_HEIGHT,          // map grid cols & rows
+      (unsigned int *) mLevelData,        // grid data
+      "assets/game/basic_tileset.png",    // texture filepath
+      TILE_DIMENSION,                     // tile size
+      5, 1,                               // texture cols & rows
+      mOrigin                             // in-game origin
    );
 
    /*
@@ -104,7 +104,7 @@ void LevelA::update(float deltaTime)
    mGameState.xochitl->update(
       deltaTime,      // delta time / fixed timestep
       nullptr,        // player
-      mGameState.map, // map
+      nullptr,        // map
       nullptr,        // collidable entities
       0               // col. entity count
    );
