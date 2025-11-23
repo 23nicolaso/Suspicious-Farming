@@ -9,11 +9,9 @@ void LevelA::initialise()
 {
    mGameState.nextSceneID = 0;
 
-   mGameState.bgm = LoadMusicStream("assets/game/04 - Silent Forest.wav");
-   SetMusicVolume(mGameState.bgm, 0.33f);
-   // PlayMusicStream(gState.bgm);
-
-   mGameState.jumpSound = LoadSound("assets/game/Dirt Jump.wav");
+   mGameState.bgm = LoadMusicStream("assets/audio/hummingbirdmornin.mp3");
+   SetMusicVolume(mGameState.bgm, 0.4f);
+   PlayMusicStream(mGameState.bgm);
 
    /*
       ----------- MAP -----------
@@ -46,6 +44,7 @@ void LevelA::initialise()
       mGameState.xochitl->getScale().y
    });
    mGameState.xochitl->setFrameSpeed(5);
+   mGameState.xochitl->setSpeed(200.0f);
 
    /*
       ----------- CROSSHAIR ----------
@@ -64,6 +63,10 @@ void LevelA::initialise()
   */
    mGameState.bulletManager = new BulletManager();
    mGameState.monsterManager =  new MonsterManager();
+
+   mGameState.monsterManager->spawnMonster(PEANUT, mOrigin);
+   mGameState.monsterManager->spawnMonster(RADDISH, mOrigin);
+   mGameState.monsterManager->spawnMonster(CRABWEED, mOrigin);
 
    /*
       ----------- CAMERA -----------
@@ -89,7 +92,7 @@ void LevelA::update(float deltaTime)
 
    Vector2 currentPlayerPosition = { mGameState.xochitl->getPosition().x, mGameState.xochitl->getPosition().y };
 
-   mGameState.bulletManager -> update(deltaTime);
+   mGameState.bulletManager -> update(deltaTime, mGameState.monsterManager);
    mGameState.monsterManager -> update(
       deltaTime, 
       mGameState.xochitl, 
@@ -119,5 +122,4 @@ void LevelA::shutdown()
    delete mGameState.bulletManager;
 
    UnloadMusicStream(mGameState.bgm);
-   UnloadSound(mGameState.jumpSound);
 }

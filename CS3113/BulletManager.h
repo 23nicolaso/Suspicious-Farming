@@ -2,6 +2,7 @@
 #define BULLET_MANAGER_H
 
 #include "Bullet.h"
+#include "MonsterManager.h"
 
 class BulletManager
 {
@@ -10,7 +11,7 @@ private:
 
 public:
     void shoot(Vector2 direction, Vector2 spawnPosition);
-    void update(float deltaTime);
+    void update(float deltaTime, MonsterManager * monsterManager);
     void render();
 };
 

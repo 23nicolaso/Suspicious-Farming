@@ -1,32 +1,49 @@
 #include "MonsterManager.h"
 
+MonsterManager::~MonsterManager(){
+    for (Monster * monster: mMonsters){
+        delete monster;
+    }
+
+    mMonsters.clear();
+}
+
 void MonsterManager::spawnMonster(MonsterType type, Vector2 location){
-    mEntities.emplace_back(
-        new Monster(
-            location, 
-            Vector2{100.0f, 100.0f},
-            "assets/game/peanut.png",
-            ATLAS,
-            Vector2{3, 4},
-            ANIMATION_ATLAS,
-            NPC,
-            WANDERER
-        )
-    );
+    if (type == PEANUT){
+        Peanut * monster = new Peanut(
+            location
+        );
+
+        mMonsters.emplace_back(monster);
+    }
+    else if (type == CRABWEED){
+        Crabweed * monster = new Crabweed(
+            location
+        );
+
+        mMonsters.emplace_back(monster);
+    }
+    else if (type == RADDISH){
+        Raddish * monster = new Raddish(
+            location
+        );
+
+        mMonsters.emplace_back(monster);
+    }
 }
 
 void MonsterManager::render(){
-    for (const Entity * entity : mEntities){
-        entity -> render();
+    for (const Monster * monster : mMonsters){
+        monster -> render();
     }
 }
 
 void MonsterManager::update(float deltaTime, Entity * player, Map *map){
-    for (Entity * entity: mEntities){
-        entity -> update(
+    for (Monster * monster: mMonsters){
+        monster -> update(
             deltaTime,
             player,
-            map,
+            nullptr,
             nullptr,
             0
         );

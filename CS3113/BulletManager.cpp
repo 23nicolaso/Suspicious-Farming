@@ -17,9 +17,9 @@ void BulletManager::shoot(Vector2 direction, Vector2 spawnPosition){
     }
 }
 
-void BulletManager::update(float deltaTime){
+void BulletManager::update(float deltaTime, MonsterManager* monsterManager){
    for (Bullet& bullet : bullets){
-        bullet.update(deltaTime);
+        bullet.update(deltaTime, monsterManager -> getMonsters());
    }
 }
 

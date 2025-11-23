@@ -11,8 +11,31 @@ private:
     Texture2D mTexture;
     ItemType mActiveItemType;
     Item mInventorySlots[10];
-    int mLastOpenSlot = 0;
     int mCurrentSlot = 0;
+
+    Rectangle textureArea = {
+        // top-left corner
+        0.0f, 0.0f,
+
+        // width and height
+        static_cast<float>(mTexture.width / 2),
+        static_cast<float>(mTexture.height)
+    };
+    Rectangle activeSlotTextureArea = {
+        // top-left corner
+        static_cast<float>(mTexture.width / 2), 0.0f,
+
+        // width and height
+        static_cast<float>(mTexture.width / 2),
+        static_cast<float>(mTexture.height)
+    };
+
+    // Origin inside the source texture (centre of the texture)
+    Vector2 originOffset = {
+        static_cast<float>(mScale.x) / 2.0f,
+        static_cast<float>(mScale.y) / 2.0f
+    };
+
 
 public:
     Inventory(Vector2 position, Vector2 scale, const char *textureFilepath);
@@ -20,11 +43,11 @@ public:
 
     void render();
 
-    bool        getInventoryFull()         const { return mLastOpenSlot > 9;      }
     Vector2     getPosition()              const { return mPosition;              }
     Texture2D   getTexture()               const { return mTexture;               }
 
     ItemType    getItemType()              const { return mInventorySlots[mCurrentSlot].getItemType(); }
+    int         getCurrentSlotQuantity()   const { return mInventorySlots[mCurrentSlot].getQuantity(); }
 
     void SetCurrentSlot(int currentSlot)    { mCurrentSlot = currentSlot; }
     void setPosition(Vector2 newPosition)   { mPosition = newPosition; }
@@ -43,10 +66,16 @@ public:
     }
 
     void addItem(const Item * item){
-        if (mLastOpenSlot < 9){
-            mInventorySlots[mLastOpenSlot].setToItem(item);
-            mLastOpenSlot += 1;
+        for (Item & inventorySlot : mInventorySlots){
+            if (inventorySlot.getQuantity() <= 0){
+                inventorySlot.setToItem(item);    
+                break;
+            }
         }
+    }
+
+    void consumeItemAtSlot(){
+        mInventorySlots[mCurrentSlot].addQuantity(-1);
     }
 };
 

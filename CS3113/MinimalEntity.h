@@ -1,5 +1,5 @@
-#ifndef SIMPLE_ENTITY_H
-#define SIMPLE_ENTITY_H
+#ifndef MINIMAL_ENTITY_H
+#define MINIMAL_ENTITY_H
 
 #include "cs3113.h"
 

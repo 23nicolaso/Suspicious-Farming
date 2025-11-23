@@ -18,7 +18,6 @@ struct GameState
     BulletManager *bulletManager = nullptr;
 
     Music bgm;
-    Sound jumpSound;
 
     Camera2D camera;
 

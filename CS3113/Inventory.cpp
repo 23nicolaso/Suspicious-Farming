@@ -6,36 +6,9 @@ Inventory::~Inventory() { UnloadTexture(mTexture); };
 
 void Inventory::render()
 {
-    Rectangle textureArea;
-    Rectangle activeSlotTextureArea; 
-    // Half texture, because texture has active/unactive slots
-    textureArea = {
-        // top-left corner
-        0.0f, 0.0f,
-
-        // width and height
-        static_cast<float>(mTexture.width / 2),
-        static_cast<float>(mTexture.height)
-    };
-
-    activeSlotTextureArea = {
-        // top-left corner
-        static_cast<float>(mTexture.width / 2), 0.0f,
-
-        // width and height
-        static_cast<float>(mTexture.width / 2),
-        static_cast<float>(mTexture.height)
-    };
-
-    // Origin inside the source texture (centre of the texture)
-    Vector2 originOffset = {
-        static_cast<float>(mScale.x) / 2.0f,
-        static_cast<float>(mScale.y) / 2.0f
-    };
-
     for (size_t i = 0; i < 9; i++){
         const Item& item = mInventorySlots[i];
-        if (item.getItemType() != AIR){
+        if (item.getItemType() != AIR && item.getQuantity() > 0){
             item.renderAtPosition({
                 // To create a bar
                 mPosition.x + mScale.x * i,

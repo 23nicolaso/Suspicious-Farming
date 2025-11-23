@@ -23,12 +23,15 @@ const std::map<int, std::vector<int>> Player::playerAnimationAtlas = {
     {DOWN_SHOOT,   { 43, 56, 43 }}
 };
 
-void Player::useItem(MonsterManager * monsterManager, BulletManager * bulletManager, Map * map, ItemType activeItemType, Vector2 mousePosition){
+void Player::useItem(MonsterManager * monsterManager, BulletManager * bulletManager, Map * map, Inventory * inventory, ItemType activeItemType, Vector2 mousePosition){
     if (activeItemType == HOE){
         if (mIsAnimationBlocking){
             // Can't double block!
             return;
         }
+
+        // HANDLE AUDIO
+        PlaySound(slashSound);
 
         // HANDLE ANIMATION
         mCurrentFrameIndex = 0;
@@ -59,6 +62,9 @@ void Player::useItem(MonsterManager * monsterManager, BulletManager * bulletMana
             // Can't double block!
             return;
         }
+
+        // HANDLE AUDIO
+        PlaySound(shootSound);
 
         mCurrentFrameIndex = 0;
         mIsAnimationBlocking = true;
@@ -98,9 +104,16 @@ void Player::useItem(MonsterManager * monsterManager, BulletManager * bulletMana
     }
 
     else if (activeItemType == CONSUMABLE){
-        // CORRECT MOUSE POSITION FOR WORLD
+        if (inventory -> getCurrentSlotQuantity() <= 0){
+            return;
+        }
+
+        // // CORRECT MOUSE POSITION FOR WORLD
         mousePosition.x += mPosition.x;
         mousePosition.y += mPosition.y;
+        inventory -> consumeItemAtSlot();
+        // HANDLE AUDIO
+        PlaySound(plantSound);
 
         // will be more sophisticated in future, but for now just spawn the monster!
         monsterManager->spawnMonster(PEANUT, mousePosition);
