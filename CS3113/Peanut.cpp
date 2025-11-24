@@ -40,6 +40,6 @@ void Peanut::update(float deltaTime, Entity *player, Map *map,
 
     if (mRedFlashTime > 0.0f) mRedFlashTime -= deltaTime;
 
-    if (mTextureType == ATLAS && (mIsAnimationBlocking || (!mIsAnimationBlocking && GetLength(mMovement) != 0))) 
+    if (mTextureType == ATLAS) 
         animate(deltaTime);
 }

@@ -13,6 +13,7 @@ struct GameState
     
     Crosshair *crosshair = nullptr;
     Map *map = nullptr;
+    Map *plantMap = nullptr;
 
     MonsterManager *monsterManager = nullptr;
     BulletManager *bulletManager = nullptr;

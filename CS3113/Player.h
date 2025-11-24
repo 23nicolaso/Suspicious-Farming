@@ -62,7 +62,7 @@ class Player : public Entity
     }
     
     void lookAtMouse(ItemType activeItemType, Vector2 mousePosition);
-    void useItem(MonsterManager * monsterManager, BulletManager * bulletManager, Map * map, Inventory * inventory, ItemType activeItemType, Vector2 mousePosition);
+    void useItem(MonsterManager * monsterManager, BulletManager * bulletManager, Map * map, Map * plantMap, Inventory * inventory, ItemType activeItemType, Vector2 mousePosition);
 };
 
 #endif // PLAYER_H

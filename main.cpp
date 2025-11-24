@@ -145,15 +145,21 @@ void processInput()
         
         // LEFT CLICK TO USE ITEM
         if (IsMouseButtonPressed(0)) {
-            gCurrentScene -> getState().xochitl -> 
-                useItem(
-                    gCurrentScene -> getState().monsterManager,
-                    gCurrentScene -> getState().bulletManager,
-                    gCurrentScene -> getState().map, 
-                    gInventory,
-                    gInventory -> getItemType(), 
-                    mousePosition
-                );
+            if (mDHandler->isActive()){
+                mDHandler->jumpToNextText();
+            }
+            else {
+                gCurrentScene -> getState().xochitl -> 
+                    useItem(
+                        gCurrentScene -> getState().monsterManager,
+                        gCurrentScene -> getState().bulletManager,
+                        gCurrentScene -> getState().map, 
+                        gCurrentScene -> getState().plantMap,
+                        gInventory,
+                        gInventory -> getItemType(), 
+                        mousePosition
+                    );
+            }
         }
 
         if (IsKeyDown(KEY_ONE))        gInventory -> SetCurrentSlot(0);
@@ -228,8 +234,8 @@ void render()
     gEffects->render();
     EndMode2D();
 
-    gInventory->render();
-    mDHandler -> displayText("This is a test", VETERAN_JOE, 3);
+    gInventory -> render();
+    mDHandler  -> render();
     EndDrawing();
 }
 

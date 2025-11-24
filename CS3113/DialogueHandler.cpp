@@ -12,9 +12,40 @@ void DialogueHandler::loadCharacterTexture(const char * filepath, const Characte
     mIconsMap[character] = LoadTexture(filepath);
 }
 
-void DialogueHandler::displayText(const char * text, const Character character, int animIndex){
+void DialogueHandler::displayText(const char * text, const Character character, int animIndex, float res){
     if (mVisibilityStatus == HIDDEN) return;
-    render();
+
+    Rectangle textureArea1;
+    // Whole texture (UV coordinates)
+    textureArea1 = {
+        // top-left corner
+        0.0f, 0.0f,
+
+        // bottom-right corner (of texture)
+        static_cast<float>(mTexture.width),
+        static_cast<float>(mTexture.height)
+    };
+
+    // Destination rectangle – centred on gPosition
+    Rectangle destinationArea1 = {
+        mPosition.x,
+        mPosition.y,
+        static_cast<float>(mScale.x),
+        static_cast<float>(mScale.y)
+    };
+
+    // Origin inside the source texture (centre of the texture)
+    Vector2 originOffset1 = {
+        static_cast<float>(mScale.x) / 2.0f,
+        static_cast<float>(mScale.y) / 2.0f
+    };
+
+    // Render the texture on screen
+    DrawTexturePro(
+        mTexture, 
+        textureArea1, destinationArea1, originOffset1,
+        mRotation, WHITE
+    );
 
     DrawText(text, mPosition.x - 300, mPosition.y, 80, BLACK);
 
@@ -22,11 +53,11 @@ void DialogueHandler::displayText(const char * text, const Character character, 
     // Whole texture (UV coordinates)
     textureArea = {
         // top-left corner
-        static_cast<float>(animIndex)*32.0f, 0.0f,
+        static_cast<float>(animIndex)*res, 0.0f,
 
         // width and height
-        32.0f,
-        32.0f
+        res,
+        res
     };
 
     // Destination rectangle – centred on gPosition
@@ -49,4 +80,11 @@ void DialogueHandler::displayText(const char * text, const Character character, 
         textureArea, destinationArea, originOffset,
         mRotation, WHITE
     );
+}
+
+void DialogueHandler::jumpToNextText(){
+    mCurrentLine += 1;
+    if (mCurrentLine >= mDialogueLines.size()){
+        deactivate();
+    }
 }

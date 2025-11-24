@@ -14,7 +14,7 @@ void LevelA::initialise()
    PlayMusicStream(mGameState.bgm);
 
    /*
-      ----------- MAP -----------
+      ----------- MAPS -----------
    */
    mGameState.map = new Map(
       LEVEL_WIDTH, LEVEL_HEIGHT,          // map grid cols & rows
@@ -23,6 +23,15 @@ void LevelA::initialise()
       TILE_DIMENSION,                     // tile size
       5, 1,                               // texture cols & rows
       mOrigin                             // in-game origin
+   );
+
+   mGameState.plantMap = new Map(
+      LEVEL_WIDTH, LEVEL_HEIGHT,
+      (unsigned int *) mLevelPlantData,
+      "assets/game/plants_tileset.png",
+      TILE_DIMENSION,
+      7, 1,
+      mOrigin
    );
 
    /*
@@ -107,6 +116,7 @@ void LevelA::render()
    ClearBackground(ColorFromHex(mBGColourHexCode));
 
    mGameState.map->render();
+   mGameState.plantMap->render();
    mGameState.xochitl->updateAtlas();
    mGameState.xochitl->render();
    mGameState.crosshair->render();
@@ -117,6 +127,7 @@ void LevelA::render()
 void LevelA::shutdown()
 {
    delete mGameState.xochitl;
+   delete mGameState.plantMap;
    delete mGameState.map;
    delete mGameState.monsterManager;
    delete mGameState.bulletManager;

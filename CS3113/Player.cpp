@@ -23,7 +23,7 @@ const std::map<int, std::vector<int>> Player::playerAnimationAtlas = {
     {DOWN_SHOOT,   { 43, 56, 43 }}
 };
 
-void Player::useItem(MonsterManager * monsterManager, BulletManager * bulletManager, Map * map, Inventory * inventory, ItemType activeItemType, Vector2 mousePosition){
+void Player::useItem(MonsterManager * monsterManager, BulletManager * bulletManager, Map * map, Map * plantMap, Inventory * inventory, ItemType activeItemType, Vector2 mousePosition){
     if (activeItemType == HOE){
         if (mIsAnimationBlocking){
             // Can't double block!
@@ -108,15 +108,19 @@ void Player::useItem(MonsterManager * monsterManager, BulletManager * bulletMana
             return;
         }
 
-        // // CORRECT MOUSE POSITION FOR WORLD
+        // CORRECT MOUSE POSITION FOR WORLD
         mousePosition.x += mPosition.x;
         mousePosition.y += mPosition.y;
-        inventory -> consumeItemAtSlot();
-        // HANDLE AUDIO
-        PlaySound(plantSound);
 
-        // will be more sophisticated in future, but for now just spawn the monster!
-        monsterManager->spawnMonster(PEANUT, mousePosition);
+        // Check if land is farmland and there isn't a crop there already!
+        if (map -> getTileAt(mousePosition) == 4 && plantMap -> getTileAt(mousePosition) == 0){ 
+            inventory -> consumeItemAtSlot();
+            // HANDLE AUDIO
+            PlaySound(plantSound);
+
+            // will be more sophisticated in future, but for now just put the peanut seeds if possible!
+            plantMap->setTileAt(mousePosition, 1);
+        }
     }
 }
 
