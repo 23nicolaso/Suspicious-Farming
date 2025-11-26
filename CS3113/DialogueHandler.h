@@ -23,11 +23,11 @@ class DialogueHandler : public MinimalEntity
     public:
         // This is the lines used in the opening scene
         std::vector<DialogueLine> mDialogueLines = {
-            {"Mysterious Individual: I must inform you\n that your grandmother has\n contracted Eternal Sleep disease", Character::MYSTERY, 0, 32.0f},
+            {"Mysterious Individual: I must inform\n you that your grandmother has\n contracted Eternal Sleep disease", Character::MYSTERY, 0, 32.0f},
             {"As the name suggests, \nit makes you sleep forever", Character::MYSTERY, 0, 32.0f},
             {"Thankfully there is a cure...", Character::MYSTERY, 0, 32.0f},
-            {"But it will take a lot of effort", Character::MYSTERY, 0, 32.0f},
-            {"Make the dish that pleases the gods", Character::MYSTERY, 0, 32.0f},
+            {"...", Character::MYSTERY, 0, 32.0f},
+            {"Make \"the dish that\npleases the gods\"", Character::MYSTERY, 0, 32.0f},
             {"With legendary crops", Character::MYSTERY, 0, 32.0f},
             {"Good luck lol XD", Character::MYSTERY, 0, 32.0f},
         };

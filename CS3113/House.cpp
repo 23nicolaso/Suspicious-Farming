@@ -49,7 +49,7 @@ void House::initialise()
    
    // Assets from me!
    mGameState.xochitl = new Player(
-      {mOrigin.x - 300.0f, mOrigin.y - 200.0f}, // position
+      {mOrigin.x - 300.0f, mOrigin.y + 100.0f}, // position
       {100.0f, 100.0f},                         // scale
       "assets/game/walk.png",                   // texture file address
       ATLAS,                                    // single image or atlas?
