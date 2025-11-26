@@ -15,7 +15,11 @@ void DialogueHandler::loadCharacterTexture(const char * filepath, const Characte
 void DialogueHandler::displayText(const char * text, const Character character, int animIndex, float res){
     if (mVisibilityStatus == HIDDEN) return;
 
+    /*
+    --------- DRAW DIALOG BOX ---------
+    */
     Rectangle textureArea1;
+
     // Whole texture (UV coordinates)
     textureArea1 = {
         // top-left corner
@@ -47,8 +51,20 @@ void DialogueHandler::displayText(const char * text, const Character character, 
         mRotation, WHITE
     );
 
-    DrawText(text, mPosition.x - 300, mPosition.y, 80, BLACK);
+    /*
+    --------- DRAW DIALOG TEXT ---------
+    */
+    // Get the size of the text so it can be centered vertically :D
+    Vector2 textSize    = MeasureTextEx(GetFontDefault(), text, 50, 5.0f);
+    Vector2 textOrigin  = {0, textSize.y / 2};  
 
+    DrawTextPro(
+        GetFontDefault(), text, Vector2{mPosition.x - 300, mPosition.y}, textOrigin, 0, 50, 5.0f, BLACK
+    );
+
+    /*
+    --------- DRAW NPC AVATAR ---------
+    */
     Rectangle textureArea;
     // Whole texture (UV coordinates)
     textureArea = {

@@ -1,15 +1,15 @@
-#include "LevelA.h"
+#include "House.h"
 
-LevelA::LevelA()                                      : Scene { {0.0f}, nullptr   } {}
-LevelA::LevelA(Vector2 origin, const char *bgHexCode) : Scene { origin, bgHexCode } {}
+House::House()                                      : Scene { {0.0f}, nullptr   } {}
+House::House(Vector2 origin, const char *bgHexCode) : Scene { origin, bgHexCode } {}
 
-LevelA::~LevelA() { shutdown(); }
+House::~House() { shutdown(); }
 
-void LevelA::initialise()
+void House::initialise()
 {
    mGameState.nextSceneID = 0;
 
-   mGameState.bgm = LoadMusicStream("assets/audio/hummingbirdmornin.mp3");
+   mGameState.bgm = LoadMusicStream("assets/audio/groovin.mp3");
    SetMusicVolume(mGameState.bgm, 0.3f);
    PlayMusicStream(mGameState.bgm);
 
@@ -17,31 +17,31 @@ void LevelA::initialise()
       ----------- MAPS -----------
    */
    mGameState.map = new Map(
-      LEVEL_WIDTH, LEVEL_HEIGHT,          // map grid cols & row
+      LEVEL_WIDTH, LEVEL_HEIGHT,          // map grid cols & rows
       (unsigned int *) mLevelData,        // grid data
-      "assets/game/basic_tileset.png",    // texture filepath
+      "assets/game/tileset_room.png",     // texture filepath
       TILE_DIMENSION,                     // tile size
-      19, 1,                               // texture cols & rows
+      17, 1,                              // texture cols & rows
       mOrigin                             // in-game origin
    );
 
    mGameState.plantMap = new Map(
       LEVEL_WIDTH, LEVEL_HEIGHT,
       (unsigned int *) mLevelPlantData,
-      "assets/game/plants_tileset.png",
+      "assets/game/interior.png",
       TILE_DIMENSION,
-      10, 1,
+      16, 1,
       mOrigin
    );
 
-   mGameState.secondLevel = new Map(
-      LEVEL_WIDTH, LEVEL_HEIGHT,
-      (unsigned int *) mSecondLevelData,
-      "assets/game/house.png",
-      TILE_DIMENSION,
-      8, 16,
-      mOrigin
-   );
+   /*
+      --------- MANAGERS ---------
+   */
+   mGameState.npcManager     =  new NPCManager();
+   mGameState.npcManager->setOrigin(mOrigin);
+
+   mGameState.npcManager->spawnNPC(0);
+
 
    /*
       ----------- PROTAGONIST -----------
@@ -67,26 +67,25 @@ void LevelA::initialise()
    /*
       ----------- CROSSHAIR ----------
    */
-   const std::map<int, std::vector<int>> anim_atlas = {{0,{0}},{1,{1}},{2,{2}},{3,{3}}, {4, {4}}};
+    const std::map<int, std::vector<int>> anim_atlas = {{0,{0}},{1,{1}},{2,{2}},{3,{3}},{4,{4}}};
 
-  mGameState.crosshair = new Crosshair(
-   {mOrigin.x, mOrigin.y},
-   {50.0f, 50.0f},
-   "assets/game/crosshair.png",
-   ATLAS,
-   {1, 5},
-   anim_atlas,
-   CROSSHAIR
-  );
+    mGameState.crosshair = new Crosshair(
+    {mOrigin.x, mOrigin.y},
+    {50.0f, 50.0f},
+    "assets/game/crosshair.png",
+    ATLAS,
+    {1, 5},
+    anim_atlas,
+    CROSSHAIR
+    );
 
-  mGameState.crosshair->activate();
+    mGameState.crosshair->activate();
 
   /*
       ----------- MANAGERS ----------
   */
-   mGameState.bulletManager  =  new BulletManager();
+   mGameState.bulletManager = new BulletManager();
    mGameState.monsterManager =  new MonsterManager();
-   mGameState.npcManager     =  new NPCManager();
 
    /*
       ----------- CAMERA -----------
@@ -98,57 +97,53 @@ void LevelA::initialise()
    mGameState.camera.zoom = 1.0f;                                // default zoom
 }
 
-void LevelA::update(float deltaTime)
+void House::update(float deltaTime)
 {
    UpdateMusicStream(mGameState.bgm);
 
    mGameState.xochitl->update(
-      deltaTime,      // delta time / fixed timestep
-      nullptr,        // player
-      mGameState.secondLevel,        // map
-      nullptr,        // collidable entities
-      0               // col. entity count
+      deltaTime,                  // delta time / fixed timestep
+      nullptr,                    // player
+      mGameState.plantMap,        // map
+      nullptr,                    // collidable entities
+      0                           // col. entity count
    );
 
    Vector2 currentPlayerPosition = { mGameState.xochitl->getPosition().x, mGameState.xochitl->getPosition().y };
+   if (currentPlayerPosition.y > END_GAME_THRESHOLD){
+      mGameState.nextSceneID = 3;
+   }
 
    mGameState.bulletManager -> update(deltaTime, mGameState.monsterManager);
-   mGameState.monsterManager -> update(
-      deltaTime, 
-      mGameState.xochitl, 
-      mGameState.secondLevel
-   );
 
-   mGameState.npcManager -> update(deltaTime, mGameState.plantMap);
-   mGameState.crosshair->updateCrosshair(mGameState.plantMap, mGameState.npcManager->getNPCs());
+   mGameState.npcManager->update(deltaTime, mGameState.plantMap);
+   
+   mGameState.crosshair->updateCrosshair(mGameState.plantMap, mGameState.npcManager->getNPCs());   
 
    panCamera(&mGameState.camera, &currentPlayerPosition);
 }
 
-void LevelA::render()
+void House::render()
 {
    ClearBackground(ColorFromHex(mBGColourHexCode));
 
    mGameState.map->render();
    mGameState.plantMap->render();
-   
-   mGameState.secondLevel->render();
    mGameState.xochitl->updateAtlas();
    mGameState.xochitl->render();
    mGameState.bulletManager->render();
-   mGameState.monsterManager->render();
    mGameState.npcManager->render();
    mGameState.crosshair->render();
 }
 
-void LevelA::shutdown()
+void House::shutdown()
 {
    delete mGameState.xochitl;
    delete mGameState.plantMap;
    delete mGameState.map;
    delete mGameState.monsterManager;
+   delete mGameState.npcManager;
    delete mGameState.bulletManager;
-   delete mGameState.secondLevel;
 
    UnloadMusicStream(mGameState.bgm);
 }

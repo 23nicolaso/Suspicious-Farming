@@ -19,8 +19,9 @@ void Crabweed::update(float deltaTime, Entity *player, Map *map,
         int random = GetRandomValue(0, 4);
         switch (random){
             case 0:
-                // Toggle anim state
+                // Toggle anim and invincibility state
                 mAnimState = mAnimState == HIDING? MOVING : HIDING;
+                mIsInvincible = mIsInvincible == true? false: true;
                 break;
             case 1:
                 moveUp();

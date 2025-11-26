@@ -5,6 +5,8 @@
 #include "MonsterManager.h"
 #include "BulletManager.h"
 #include "Inventory.h"
+#include "Crosshair.h"
+#include "DialogueHandler.h"
 
 class Player : public Entity
 {
@@ -12,6 +14,7 @@ class Player : public Entity
         Sound slashSound;
         Sound shootSound;
         Sound plantSound;
+        const float ITEM_SCALE = 80.0f;
 
         static const std::map<int, std::vector<int>> playerAnimationAtlas;
 
@@ -19,7 +22,8 @@ class Player : public Entity
     enum AnimState { 
         LEFT, UP, RIGHT, DOWN, UP_HOLDING, RIGHT_HOLDING, LEFT_HOLDING, 
         DOWN_SLASH, RIGHT_SLASH, UP_SLASH, DOWN_HOLDING, DOWN_GUN, LEFT_GUN,
-        LEFT_SLASH, RIGHT_GUN, UP_GUN, LEFT_SHOOT, RIGHT_SHOOT, DOWN_SHOOT, UP_SHOOT              
+        LEFT_SLASH, RIGHT_GUN, UP_GUN, LEFT_SHOOT, RIGHT_SHOOT, DOWN_SHOOT, UP_SHOOT,
+        DANCE              
     }; 
 
     Player(Vector2 position, Vector2 scale, const char *textureFilepath, 
@@ -30,6 +34,9 @@ class Player : public Entity
                 slashSound = LoadSound("assets/audio/slash.mp3");
                 plantSound = LoadSound("assets/audio/crunch.mp3");
                 shootSound = LoadSound("assets/audio/water_gun.mp3");
+                SetSoundVolume(slashSound, 0.5f);
+                SetSoundVolume(plantSound, 0.5f);
+                SetSoundVolume(shootSound, 0.5f);
             }
     
     ~Player() { UnloadSound(slashSound); UnloadSound(plantSound); UnloadSound(shootSound);}
@@ -39,30 +46,26 @@ class Player : public Entity
     void moveUp    (ItemType heldItem) { 
         if (mIsAnimationBlocking) return;
         mMovement.y = -1; 
-        if (heldItem == AIR || heldItem == HOE)     mAnimState = UP;
-        else if (heldItem == CONSUMABLE)            mAnimState = UP_HOLDING;
+        if (heldItem != GUN)     mAnimState = UP;
     }
     void moveDown  (ItemType heldItem) {
         if (mIsAnimationBlocking) return; 
         mMovement.y =  1; 
-        if (heldItem == AIR || heldItem == HOE)     mAnimState = DOWN;
-        else if (heldItem == CONSUMABLE)            mAnimState = DOWN_HOLDING;
+        if (heldItem != GUN)     mAnimState = DOWN;
     }
     void moveLeft  (ItemType heldItem) { 
         if (mIsAnimationBlocking) return;
         mMovement.x = -1; 
-        if (heldItem == AIR || heldItem == HOE)     mAnimState = LEFT;
-        else if (heldItem == CONSUMABLE)            mAnimState = LEFT_HOLDING;
+        if (heldItem != GUN)     mAnimState = LEFT;
     }
     void moveRight (ItemType heldItem) { 
         if (mIsAnimationBlocking) return;
         mMovement.x =  1; 
-        if (heldItem == AIR || heldItem == HOE)     mAnimState = RIGHT;
-        else if (heldItem == CONSUMABLE)            mAnimState = RIGHT_HOLDING;
+        if (heldItem != GUN)     mAnimState = RIGHT;
     }
     
     void lookAtMouse(ItemType activeItemType, Vector2 mousePosition);
-    void useItem(MonsterManager * monsterManager, BulletManager * bulletManager, Map * map, Map * plantMap, Inventory * inventory, ItemType activeItemType, Vector2 mousePosition);
+    void useItem(MonsterManager * monsterManager, BulletManager * bulletManager, Map * map, Map * plantMap, Inventory * inventory, ItemType activeItemType, Crosshair * crosshair, DialogueHandler * dialogueHandler,  Vector2 mousePosition);
 };
 
 #endif // PLAYER_H

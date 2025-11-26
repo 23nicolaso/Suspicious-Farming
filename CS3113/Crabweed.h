@@ -19,7 +19,8 @@ class Crabweed : public Monster
             ATLAS,
             Vector2{1, 5},
             CrabweedAnimationAtlas,
-            NPC
+            MONSTER,
+            CRABWEED
         ) {}
         
         void update(float deltaTime, Entity *player, Map *map, 

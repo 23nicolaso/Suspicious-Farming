@@ -6,14 +6,14 @@
 #include "Peanut.h"
 #include "Crabweed.h"
 #include "Raddish.h"
-
-enum MonsterType {PEANUT, CRABWEED, RADDISH}; // ONLY THESE FOR NOW! 
+#include "Item.h"
 
 class MonsterManager
 {
 private:
     // store as pointers for polymorphism
     std::vector<Monster *> mMonsters; 
+    std::vector<Item *>    mUnredeemedDrops;
 
 public:
     ~MonsterManager();
@@ -23,6 +23,8 @@ public:
     void update(float deltaTime, Entity * player, Map *map);
 
     std::vector<Monster *>& getMonsters () { return mMonsters; }
+    std::vector<Item *>&    redeemDrops () { return mUnredeemedDrops; }
+    void                    clearDrops  () { mUnredeemedDrops.clear();}
 };
 
 #endif 

@@ -1,13 +1,12 @@
 #include "Item.h"
 
-Item::Item(ItemType itemType, Vector2 scale, int quantity, const char *textureFilepath) : 
-    mItemType {itemType}, mScale(scale), mQuantity {quantity}, mTexture {LoadTexture(textureFilepath)} {}
+Item::Item(ItemType itemType, ItemID itemID, Vector2 scale, int quantity, const char *textureFilepath) : mItemType {itemType}, mItemID (itemID), mScale(scale), mQuantity {quantity}, mTexture {LoadTexture(textureFilepath)} {}
 
-Item::Item() : mItemType{AIR}, mScale{DEFAULT_SIZE}, mQuantity{0}, mTexture {LoadTexture("assets/game/air.png")} {}
+Item::Item() : mItemType{AIR}, mItemID{AIR_ITEM}, mScale{DEFAULT_SIZE}, mQuantity{0}, mTexture {LoadTexture("assets/game/air.png")} {}
 
 Item::~Item() { UnloadTexture(mTexture); };
 
-void Item::renderAtPosition(Vector2 position) const
+void Item::render() const
 {
     Rectangle textureArea;
     // Whole texture (UV coordinates)
@@ -22,8 +21,8 @@ void Item::renderAtPosition(Vector2 position) const
 
     // Destination rectangle – centred on gPosition
     Rectangle destinationArea = {
-        position.x,
-        position.y,
+        mPosition.x,
+        mPosition.y,
         static_cast<float>(mScale.x),
         static_cast<float>(mScale.y)
     };
@@ -43,6 +42,6 @@ void Item::renderAtPosition(Vector2 position) const
 
     // Draw quantity if > 1
     if (mQuantity > 1){
-        DrawText(TextFormat("%i", mQuantity), position.x+0.2*mScale.x, position.y+0.2*mScale.y, 30, WHITE);
+        DrawText(TextFormat("%i", mQuantity), mPosition.x+0.2*mScale.x, mPosition.y+0.2*mScale.y, 30, WHITE);
     }
 }

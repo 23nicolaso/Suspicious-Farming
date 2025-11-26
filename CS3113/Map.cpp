@@ -1,4 +1,5 @@
 #include "Map.h"
+#include <algorithm>
 
 Map::Map(int mapColumns, int mapRows, unsigned int *levelData,
          const char *textureFilePath, float tileSize, int textureColumns,
@@ -87,7 +88,7 @@ bool Map::isSolidTileAt(Vector2 position, float *xOverlap, float *yOverlap)
         return false;
 
     int tile = mLevelData[tileYIndex * mMapColumns + tileXIndex];
-    if (tile == 0) return false;
+    if (tile == 0 || tile == 74) return false;
 
     float tileCentreX = mLeftBoundary + tileXIndex * mTileSize + mTileSize / 2.0f;
     float tileCentreY = mTopBoundary + tileYIndex * mTileSize + mTileSize / 2.0f;
@@ -99,6 +100,26 @@ bool Map::isSolidTileAt(Vector2 position, float *xOverlap, float *yOverlap)
     *yOverlap = fmaxf(0.0f, (mTileSize / 2.0f) - fabs(position.y - tileCentreY));
 
     return true;
+}
+
+void Map::growAll() {
+    // Iter each tile in the map
+    for (int row = 0; row < mMapRows; row++)
+    {
+        // Iter each column in the row
+        for (int col = 0; col < mMapColumns; col++)
+        {
+            // Get the tile index at the current row and column
+            int tile = mLevelData[row * mMapColumns + col];
+            if (tile == 500 || tile == 10) continue; // 500 is a special case for doors, 10 is sell all button
+            if (tile > 0){
+                if (std::find(grownCropTiles.begin(), grownCropTiles.end(), tile) == grownCropTiles.end()){
+                    // Not a fully grown crop, so grow it! 
+                    mLevelData[row * mMapColumns + col] += 1;
+                }
+            }
+        }
+    }
 }
 
 int Map::getTileAt(Vector2 position) const

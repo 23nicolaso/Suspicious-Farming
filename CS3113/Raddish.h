@@ -18,7 +18,8 @@ class Raddish : public Monster
             ATLAS,
             Vector2{1, 3},
             RaddishAnimationAtlas,
-            NPC
+            MONSTER,
+            RADDISH
         ) {}
         
         void update(float deltaTime, Entity *player, Map *map, 

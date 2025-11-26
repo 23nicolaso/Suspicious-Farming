@@ -9,11 +9,7 @@ void Inventory::render()
     for (size_t i = 0; i < 9; i++){
         const Item& item = mInventorySlots[i];
         if (item.getItemType() != AIR && item.getQuantity() > 0){
-            item.renderAtPosition({
-                // To create a bar
-                mPosition.x + mScale.x * i,
-                mPosition.y
-            });
+            item.render();
         }
 
         // Destination rectangle – centred on gPosition

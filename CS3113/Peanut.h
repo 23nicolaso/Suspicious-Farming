@@ -6,6 +6,7 @@
 class Peanut : public Monster
 {
     private:
+        float moveChangeTimer = 1.0f;
         const static std::map<int, std::vector<int>> PeanutAnimationAtlas;
 
     public:
@@ -18,7 +19,8 @@ class Peanut : public Monster
             ATLAS,
             Vector2{1, 16},
             PeanutAnimationAtlas,
-            NPC
+            MONSTER,
+            PEANUT
         ) {}
         
         void update(float deltaTime, Entity *player, Map *map, 

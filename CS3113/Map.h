@@ -25,6 +25,8 @@ private:
     float mTopBoundary;   // top boundary of the map in world coordinates
     float mBottomBoundary;// bottom boundary of the map in world coordinates
 
+    std::vector<int> grownCropTiles = {3, 7, 8, 9};
+
 public:
     Map(int mapColumns, int mapRows, unsigned int *levelData,
         const char *textureFilePath, float tileSize, int textureColumns,
@@ -34,6 +36,7 @@ public:
     void build();
     void render();
     bool isSolidTileAt(Vector2 position, float *xOverlap, float *yOverlap);
+    void growAll();
     int  getTileAt(Vector2 position) const;
     void setTileAt(Vector2 position, int newTile);
 

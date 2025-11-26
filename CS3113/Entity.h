@@ -4,7 +4,7 @@
 #include "Map.h"
 
 enum EntityStatus { ACTIVE, INACTIVE                    };
-enum EntityType   { PLAYER, BLOCK, NPC, EMPTY           };
+enum EntityType   { PLAYER, BLOCK, HUMAN_NPC, MONSTER, CROSSHAIR, EMPTY};
 
 class Entity
 {

@@ -43,9 +43,44 @@ void MonsterManager::update(float deltaTime, Entity * player, Map *map){
         monster -> update(
             deltaTime,
             player,
-            nullptr,
+            map,
             nullptr,
             0
         );
+
+        if (monster -> isActive() == false && monster -> wasRewardGranted() == false){
+            monster -> setRewardGranted();
+            // Should reward player by putting in the list of drops available for redemption
+            if (monster->getMonsterType() == PEANUT){
+                // REWARD PEANUT
+                mUnredeemedDrops.emplace_back(new Item(
+                    SELLABLE,
+                    PEANUT_DROP,
+                    {80.0f, 80.0f},
+                    1,
+                    "assets/game/peanut_item.png"
+                ));
+            }
+            else if (monster->getMonsterType() == CRABWEED){
+                // REWARD CRABWEED
+                mUnredeemedDrops.emplace_back(new Item(
+                    SELLABLE,
+                    CRABWEED_DROP,
+                    {80.0f, 80.0f},
+                    1,
+                    "assets/game/bundle_of_weeds.png"
+                ));
+            }
+            else if (monster->getMonsterType() == RADDISH){
+                // REWARD RADDISH
+                mUnredeemedDrops.emplace_back(new Item(
+                    SELLABLE,
+                    RADDISH_DROP,
+                    {80.0f, 80.0f},
+                    1,
+                    "assets/game/raddish_item.png"
+                ));
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 #include "CS3113/ShaderProgram.h"
 #include "CS3113/Menu.h"
+#include "CS3113/House.h"
+#include "CS3113/StoryScene.h"
 
 // Global Constants
 constexpr int SCREEN_WIDTH     = 1920,
@@ -23,6 +25,8 @@ Scene *gCurrentScene = nullptr;
 std::vector<Scene*> gLevels = {};
 
 LevelA *gLevelA = nullptr;
+House  *gHouse  = nullptr;
+StoryScene   *gStoryScene   = nullptr;
 Menu   *gMenu   = nullptr;
 Inventory *gInventory = nullptr;
 
@@ -34,7 +38,7 @@ Effects *gEffects = nullptr;
 
 ShaderProgram gShader;
 DialogueHandler * mDHandler = nullptr;
-
+int gMoney = 0;
 
 Vector2 gLightPosition = { 0.0f, 0.0f };
 
@@ -59,11 +63,12 @@ void initialise()
 
     gShader.load("shaders/vertex.glsl", "shaders/fragment.glsl");
 
-    gLevelA = new LevelA(ORIGIN, "#011627");
+    gLevelA = new LevelA(ORIGIN, "#1f8259");
     gMenu   = new Menu(ORIGIN, "#FFFFFF");
+    gHouse  = new House(ORIGIN, "#011627");
+    gStoryScene = new StoryScene(ORIGIN, "#000000");
 
     mDHandler = new DialogueHandler(Vector2{ORIGIN.x, ORIGIN.y + SCREEN_HEIGHT / 2 - INVENTORY_BAR_BOTTOM_OFFSET * 2}, Vector2{0.0f, 0.0f}, Vector2{1280.0f, 320.0f}, "assets/game/dialog.png");
-    mDHandler->activate();
 
     gInventory = new Inventory(
       {ORIGIN.x - 4.5 * INVENTORY_SLOT_SIZE, ORIGIN.y + SCREEN_HEIGHT / 2 - INVENTORY_BAR_BOTTOM_OFFSET},             // Position
@@ -73,6 +78,7 @@ void initialise()
 
     item1 = new Item(
         GUN,                                        // Item Type
+        GUN_ITEM,                                   // ITEM_ID
         ITEM_SCALE,                                 // Scale
         1,                                          // Quantity
         "assets/game/gun.png"                       // Texture Filepath
@@ -80,6 +86,7 @@ void initialise()
 
     item2 = new Item(
         HOE,                                        // Item Type
+        HOE_ITEM,                                   // ITEM_ID
         ITEM_SCALE,                                 // Scale
         1,                                          // Quantity
         "assets/game/hoe.png"                       // Texture Filepath
@@ -87,6 +94,7 @@ void initialise()
 
     item3 = new Item(
         CONSUMABLE,                                 // Item Type
+        PEANUT_SEED,                                // ITEM ID
         ITEM_SCALE,                                 // Scale
         5,                                          // Quantity
         "assets/game/peanut_seed.png"               // Texture Filepath
@@ -97,9 +105,15 @@ void initialise()
     gInventory->addItem(item3);
 
     gLevels.push_back(gMenu);
+    gLevels.push_back(gStoryScene);
+    gLevels.push_back(gHouse);
     gLevels.push_back(gLevelA);
 
     mDHandler -> loadCharacterTexture("assets/game/veteranjoe.png", VETERAN_JOE);
+    mDHandler -> loadCharacterTexture("assets/game/suspicioussalesman.png", SUSPICIOUS_SALESMAN);
+    mDHandler -> loadCharacterTexture("assets/game/dish_to_please_the_gods.png", DISH);
+    mDHandler -> loadCharacterTexture("assets/game/grandmabesleepin.png", GRANDMAW);
+    mDHandler -> loadCharacterTexture("assets/game/mystery_man.png", MYSTERY);
 
     switchToScene(gMenu);
 
@@ -112,11 +126,23 @@ void initialise()
     DisableCursor();
 }
 
+void sellAll(){
+    gMoney += gInventory->sellAll();
+}
+
 void processInput() 
 {
     if (gCurrentScene == gMenu){
         if (IsKeyDown(KEY_ENTER)){
-            switchToScene(gLevelA); 
+            mDHandler->activate();
+            switchToScene(gStoryScene); 
+        }
+    }
+
+    else if (gCurrentScene == gStoryScene){
+        if (IsMouseButtonPressed(0)){
+            mDHandler->jumpToNextText();
+            gStoryScene->updateDialogNumber(mDHandler->getCurrentLine());
         }
     }
 
@@ -142,13 +168,17 @@ void processInput()
         else if (IsKeyDown(KEY_D)) gCurrentScene->getState().xochitl->moveRight (gInventory -> getItemType());
         if      (IsKeyDown(KEY_W)) gCurrentScene->getState().xochitl->moveUp    (gInventory -> getItemType());
         else if (IsKeyDown(KEY_S)) gCurrentScene->getState().xochitl->moveDown  (gInventory -> getItemType());
+        if      (IsKeyPressed(KEY_U)) gCurrentScene->getState().plantMap->growAll();
         
         // LEFT CLICK TO USE ITEM
         if (IsMouseButtonPressed(0)) {
             if (mDHandler->isActive()){
                 mDHandler->jumpToNextText();
             }
-            else {
+            else 
+            {
+                if (gCurrentScene -> getState().crosshair->getCrosshairState() == 4) { sellAll();             }
+                else if (gCurrentScene -> getState().crosshair->getCrosshairState() == 3) { switchToScene(gHouse); }
                 gCurrentScene -> getState().xochitl -> 
                     useItem(
                         gCurrentScene -> getState().monsterManager,
@@ -157,6 +187,8 @@ void processInput()
                         gCurrentScene -> getState().plantMap,
                         gInventory,
                         gInventory -> getItemType(), 
+                        gCurrentScene -> getState().crosshair,
+                        mDHandler,
                         mousePosition
                     );
             }
@@ -196,7 +228,7 @@ void update()
     }
 
     
-    if (gCurrentScene == gMenu){
+    if (gCurrentScene == gMenu || gCurrentScene == gStoryScene){
         gCurrentScene->update(deltaTime);
         return;
     }
@@ -207,6 +239,7 @@ void update()
 
         Vector2 cameraTarget = gCurrentScene->getState().xochitl->getPosition();
         gEffects->update(FIXED_TIMESTEP, &cameraTarget);
+        gInventory->redeemMonsterDrops(gCurrentScene->getState().monsterManager);
 
         gLightPosition = gCurrentScene->getState().xochitl->getPosition();
 
@@ -223,6 +256,14 @@ void render()
         return;
     }
 
+    else if (gCurrentScene == gStoryScene){
+        BeginDrawing();
+        gCurrentScene->render();
+        mDHandler  -> render();
+        EndDrawing();
+        return;
+    }
+
     BeginDrawing();
     BeginMode2D(gCurrentScene->getState().camera);
     // gShader.begin();
@@ -235,6 +276,7 @@ void render()
     EndMode2D();
 
     gInventory -> render();
+    DrawText(TextFormat("Money: %i", gMoney), ORIGIN.x+SCREEN_WIDTH*0.4, ORIGIN.y-0.4*SCREEN_HEIGHT, 30, BLACK);
     mDHandler  -> render();
     EndDrawing();
 }
@@ -242,7 +284,9 @@ void render()
 void shutdown() 
 {
     delete gLevelA;
+    delete gStoryScene;
     delete gInventory;
+    delete gHouse;
     delete item1;
     delete item2;
     delete item3;

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Crosshair.h"
 #include "Inventory.h"
+#include "NPCManager.h"
 
 #ifndef SCENE_H
 #define SCENE_H
@@ -14,7 +15,9 @@ struct GameState
     Crosshair *crosshair = nullptr;
     Map *map = nullptr;
     Map *plantMap = nullptr;
-
+    Map *secondLevel = nullptr;
+    
+    NPCManager *npcManager = nullptr;
     MonsterManager *monsterManager = nullptr;
     BulletManager *bulletManager = nullptr;
 
